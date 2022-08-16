@@ -1,3 +1,8 @@
 main {
     min-height: 80vh;
 }
+main.admin-page {
+    display: flex;
+    flex-wrap: nowrap;
+    min-height: 100vh;
+}

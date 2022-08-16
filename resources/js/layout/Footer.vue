@@ -7,7 +7,6 @@
             <p class="mb-1">This is a post example using bootstrap and vue.</p>
         </div>
     </footer>
-
 </template>
 
 <script>
