@@ -25,6 +25,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/test', [TestController::class, 'anyTest']);
+
 Route::group(['middleware' => 'role:administrator,manager'], function () {
     Route::get('/test/{req}', [TestController::class, 'anyTest']);
 });
@@ -38,6 +40,7 @@ Route::group(['prefix' => 'posts'], function () {
     Route::get('', [PostController::class, 'index']);
     Route::get('{post:slug}', [PostController::class, 'show']);
     Route::post('', [PostController::class, 'store']);
+    Route::post('{post}/setLike', [PostController::class, 'setLikeValue']);
 });
 
 Route::group(['prefix' => 'users'], function () {

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Exceptions\MissingRoleException;
 use Database\Factories\UserFactory;
-use DateTimeInterface;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -82,8 +81,8 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'created_at'  => 'date:d-m-Y',
-        'updated_at'  => 'date:H:i d-m-Y'
+        'created_at' => 'date:d-m-Y',
+        'updated_at' => 'date:H:i d-m-Y'
     ];
 
     public function posts(): HasMany
@@ -116,5 +115,11 @@ class User extends Authenticatable
         }
 
         throw new MissingRoleException($roles);
+    }
+
+    public function getUserPostLikes(): int
+    {
+        return Like::query()
+            ->whereIn('post_id', $this->posts->pluck('id'))->count();
     }
 }

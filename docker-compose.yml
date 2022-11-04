@@ -46,12 +46,12 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_DB=${PROJECT_NAME}_db
 
-#  mailcatcher:
-#      image: yappabe/mailcatcher
-#      container_name: ${PROJECT_NAME}-mailcatcher
-#      ports:
-#          - 127.0.0.1:1025:1025
-#          - 127.0.0.1:1080:1080
+  mailcatcher:
+      image: yappabe/mailcatcher
+      container_name: ${PROJECT_NAME}-mailcatcher
+      ports:
+          - 127.0.0.1:1025:1025
+          - 127.0.0.1:1080:1080
 #
 #  redis:
 #      image: redis:6.0

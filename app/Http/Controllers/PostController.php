@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LikeRequest;
+use App\Models\Like;
 use App\Models\Post;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,7 +14,8 @@ use Illuminate\Validation\ValidationException;
 class PostController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @param Request $request
+     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -26,22 +29,22 @@ class PostController extends Controller
         $data = Post::where('is_published', true)
             ->with('user');
 
-        $data->when($searchQuery, function($query) use ($searchQuery){
+        $data->when($searchQuery, function ($query) use ($searchQuery) {
             $query->where('title', 'ilike', '%' . $searchQuery . '%')
-            ->orWhere('body', 'ilike', '%' . $searchQuery . '%')
-            ->orWhere('preview', 'ilike', '%' . $searchQuery . '%')
-            ->orWhereHas('user', function ($q) use($searchQuery) {
-                $q->where('name', 'ilike', '%' . $searchQuery . '%');
-            });
-        });
-
-        $data->when($userId, function($query) use ($userId){
-            $query->whereHas('user', function ($q) use($userId) {
-                    $q->where('id', $userId);
+                ->orWhere('body', 'ilike', '%' . $searchQuery . '%')
+                ->orWhere('preview', 'ilike', '%' . $searchQuery . '%')
+                ->orWhereHas('user', function ($q) use ($searchQuery) {
+                    $q->where('name', 'ilike', '%' . $searchQuery . '%');
                 });
         });
 
-        $data->when($sortBy, function($query) use ($sortBy){
+        $data->when($userId, function ($query) use ($userId) {
+            $query->whereHas('user', function ($q) use ($userId) {
+                $q->where('id', $userId);
+            });
+        });
+
+        $data->when($sortBy, function ($query) use ($sortBy) {
             $query->orderBy($sortBy, ($sortBy == 'created_at') ? 'desc' : 'asc');
         });
 
@@ -54,15 +57,13 @@ class PostController extends Controller
             'status' => 'success',
             'data' => [
                 'posts' => $posts,
-                'total_pages'  => ceil($count / $perPage),
+                'total_pages' => ceil($count / $perPage),
                 'page_number' => $pageNumber
             ]
         ]);
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
      * @param Request $request
      * @return JsonResponse
      * @throws ValidationException
@@ -70,7 +71,7 @@ class PostController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'title' => ['required','unique:posts','max:100'],
+            'title' => ['required', 'unique:posts', 'max:100'],
             'body' => ['required'],
         ]);
 
@@ -90,8 +91,6 @@ class PostController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
      * @param Post $post
      * @return JsonResponse
      */
@@ -103,26 +102,33 @@ class PostController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param  int  $id
-     * @return Response
-     */
-    public function update(Request $request, $id)
+    public function setLikeValue(Post $post, LikeRequest $request): JsonResponse
     {
-        //
-    }
+        $data = $request->validated();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function destroy($id)
-    {
-        //
+        $like = Like::query()
+            ->where([
+                'user_id' => $data['user_id'],
+                'post_id' => $data['post_id']
+            ]);
+
+        if ($like->exists()) {
+            $like->delete();
+
+            return response()->json([
+                'status' => 'success',
+            ]);
+        }
+
+        $newLike = Like::create([
+                'user_id' => $data['user_id'],
+                'post_id' => $data['post_id'],
+            ]
+        );
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $newLike
+        ]);
     }
 }

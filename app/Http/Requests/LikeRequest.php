@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateLikeRequest extends FormRequest
+class LikeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,8 +26,7 @@ class UpdateLikeRequest extends FormRequest
     {
         return [
             'user_id' => ['required', 'integer', 'exists:users,id'],
-            'post_id' => ['required', 'integer', 'exists:users,id'],
-            'value' => ['required', Rule::in([0, 1])]
+            'post_id' => ['required', 'integer', 'exists:users,id']
         ];
     }
 }

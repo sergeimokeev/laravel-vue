@@ -10,8 +10,11 @@
         <a class="btn btn-dark" @click="$router.go(-1)">Go back</a>
     </div>
     <hr/>
-    <h2>Author's post list</h2>
-    <PostList :posts="posts"/>
+    <PostList :posts="posts">
+        <template #title>
+            <h2>Author's post list</h2>
+        </template>
+    </PostList>
 </template>
 
 <script>

@@ -13,8 +13,8 @@
         </ul>
         <hr>
         <div>
-            <router-link :to="{ name: 'home' }" class="nav-link text-white">Homepage</router-link>
-            <button @click="logout" type="button" class="btn nav-link text-white">Logout</button>
+            <router-link :to="{ name: 'home' }" class="btn nav-link text-white">Homepage</router-link>
+            <button @click="logout" type="button" class="btn nav-link text-white w-100">Logout</button>
         </div>
     </div>
 </template>
@@ -37,7 +37,11 @@ export default {
     },
     methods: {
         logout() {
-            axios.get('/logout')
+            axios.post('/api/logout')
+                .then(response => {
+                    this.$store.commit('auth/SET_USER', {})
+                    this.$router.push({ name: "home"})
+                })
         }
     }
 }

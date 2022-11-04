@@ -1,4 +1,5 @@
 <template>
+    <slot name="title"></slot>
     <div v-if="posts.length > 0">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
             <div class="col" v-for="post in posts">
